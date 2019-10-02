@@ -1,0 +1,67 @@
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt
+
+#relationship data information 
+overall = pd.read_csv('/Users/gregtamargo/Documents/Python Projects/S&P 500 Prices.csv')
+overall_data = pd.DataFrame(overall)
+overall_data
+stock_char = overall_data.loc[:, ["Sector", "Price", "Price/Earnings", "Market Cap", "EBITDA"]]
+
+#manipulate categorical data
+stock_char = stock_char.fillna(0)
+stock_char
+
+targets = stock_char['Price/Earnings']
+features1 = stock_char.loc[:, ["Sector", "Price", "Market Cap", "EBITDA"]]
+
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer, make_column_transformer
+
+preprocess = make_column_transformer(
+    (OneHotEncoder(), ['Sector']))
+
+feats = preprocess.fit_transform(features1).toarray()
+df = pd.DataFrame(feats)
+df
+
+features2 = stock_char.loc[:, ["Price", "Market Cap", "EBITDA"]]
+features2
+
+df_feats = pd.merge(features2, df, right_index=True, left_index=True)
+df_feats
+
+#split data
+train_size = int(.80 * features2.shape[0])
+
+train_features = features2[:train_size]
+train_targets = targets[:train_size]
+test_features = features2[train_size:]
+test_targets = targets[train_size:]
+
+#use ML to determine if characteritics have any effect on P/E ratio 
+from sklearn.neighbors import KNeighborsRegressor
+
+#finding optimal K value 
+for n in range(2,50):
+    knn = KNeighborsRegressor(n_neighbors= n)
+    knn.fit(train_features, train_targets)
+    print("n_neighbors =", n)
+    print('train, test scores')
+    print(knn.score(train_features, train_targets))
+    print(knn.score(test_features, test_targets))
+    print()
+
+#evaluate performance (create model with best performance)
+knn = KNeighborsRegressor(n_neighbors=15)
+knn.fit(train_features, train_targets)
+
+train_preds = knn.predict(train_features)
+test_preds = knn.predict(test_features)
+
+#plot actual vs predicted
+plt.scatter(train_preds, train_targets, label = 'Train')
+plt.scatter(test_preds, test_targets, label = "Test")
+plt.legend()
+plt.show
+
