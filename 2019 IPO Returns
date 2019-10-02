@@ -1,0 +1,79 @@
+import numpy as np 
+import pandas as pd 
+import matplotlib.pyplot as plt
+import datetime
+import pandas_datareader.data as web
+
+a = web.DataReader('NET', 'yahoo')
+b = web.DataReader('SDC', 'yahoo')
+c = web.DataReader('INMD', 'yahoo')
+d = web.DataReader('DT', 'yahoo')
+e = web.DataReader('BYND', 'yahoo')
+f = web.DataReader('HCAT', 'yahoo')
+g= web.DataReader('LVGO', 'yahoo')
+h=  web.DataReader('MDLA', 'yahoo')
+i = web.DataReader('PHR', 'yahoo')
+j = web.DataReader('DOYU', 'yahoo')
+k = web.DataReader('REAL', 'yahoo')
+l = web.DataReader('CHNG', 'yahoo')
+m = web.DataReader('CMBM', 'yahoo')
+n = web.DataReader('CHWY', 'yahoo')
+o = web.DataReader('FVRR', 'yahoo')
+p = web.DataReader('CRWD', 'yahoo')
+q = web.DataReader('LK', 'yahoo')
+r = web.DataReader('FSLY', 'yahoo')
+
+a = a['Close']
+b= b['Close']
+c= c['Close']
+d = d['Close']
+e =e['Close']
+f = f['Close']
+g= g['Close']
+h = h['Close']
+i = i['Close']
+j = j['Close']
+k = k['Close']
+l = l['Close']
+m = m['Close']
+n = n['Close']
+o = o['Close']
+p = p['Close']
+q = q['Close']
+r = r['Close']
+
+dfa = pd.DataFrame(a)
+dfb = pd.DataFrame(b)
+dfc = pd.DataFrame(c)
+dfd = pd.DataFrame(d)
+dfe = pd.DataFrame(e)
+dff = pd.DataFrame(f)
+dfg = pd.DataFrame(g)
+dfh = pd.DataFrame(h)
+dfi = pd.DataFrame(i)
+dfj = pd.DataFrame(j)
+dfk = pd.DataFrame(k)
+dfl = pd.DataFrame(l)
+dfm = pd.DataFrame(m)
+dfn = pd.DataFrame(n)
+dfo = pd.DataFrame(o)
+dfp = pd.DataFrame(p)
+dfq = pd.DataFrame(q)
+dfr = pd.DataFrame(r)
+
+data_frames = [dfa, dfb, dfc, dfd, dfe, dff, dfg, dfh, dfi, dfj, dfk, dfl, dfm, dfn, dfo, dfp, dfq, dfr]
+
+from functools import reduce
+df_merged = reduce(lambda  left,right: pd.merge(left,right,on=['Date']), data_frames)
+plt.plot(df_merged)
+
+#find daily returns of recent IPO's
+shifted =df_merged.shift(1)
+returns = (shifted - df_merged) / df_merged
+returns
+
+plt.plot(returns)
+
+
+
+
